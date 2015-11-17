@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0844A98F1BFB7B4E00717C5D /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0844A98E1BFB7B4E00717C5D /* Launch Screen.storyboard */; };
+		08E7A0F31BFB7D110082E750 /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08E7A0F21BFB7D110082E750 /* OrderedDictionary.swift */; };
 		C9666D90195717D3004CD98B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9666D8F195717D3004CD98B /* AppDelegate.swift */; };
 		C9666D92195717D3004CD98B /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9666D91195717D3004CD98B /* MasterViewController.swift */; };
 		C9666D94195717D3004CD98B /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9666D93195717D3004CD98B /* DetailViewController.swift */; };
@@ -30,6 +31,7 @@
 
 /* Begin PBXFileReference section */
 		0844A98E1BFB7B4E00717C5D /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		08E7A0F21BFB7D110082E750 /* OrderedDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedDictionary.swift; sourceTree = "<group>"; };
 		C9666D8A195717D3004CD98B /* FlickrSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlickrSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9666D8E195717D3004CD98B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9666D8F195717D3004CD98B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 				C9666D8F195717D3004CD98B /* AppDelegate.swift */,
 				C9666D91195717D3004CD98B /* MasterViewController.swift */,
 				C9666D93195717D3004CD98B /* DetailViewController.swift */,
+				08E7A0F21BFB7D110082E750 /* OrderedDictionary.swift */,
 				C9666D95195717D3004CD98B /* Main.storyboard */,
 				C9666D98195717D3004CD98B /* Images.xcassets */,
 				0844A98E1BFB7B4E00717C5D /* Launch Screen.storyboard */,
@@ -226,6 +229,7 @@
 				C9666D94195717D3004CD98B /* DetailViewController.swift in Sources */,
 				C9BBAB9319B25CC10040D82F /* JSON.swift in Sources */,
 				C9666D92195717D3004CD98B /* MasterViewController.swift in Sources */,
+				08E7A0F31BFB7D110082E750 /* OrderedDictionary.swift in Sources */,
 				C9666DAF1957185D004CD98B /* Flickr.swift in Sources */,
 				C9666D90195717D3004CD98B /* AppDelegate.swift in Sources */,
 			);
