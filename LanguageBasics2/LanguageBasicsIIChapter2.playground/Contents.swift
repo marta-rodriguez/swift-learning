@@ -89,3 +89,7 @@ print(setA)
 
 var setB: Set = [2, 4, 6]
 print(setA.intersect(setB))
+
+var set2: Set = [2, 5, 6, 8, 10]
+var set3: Set = [3, 6, 9]
+print(set2.union(set3))
