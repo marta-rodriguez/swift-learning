@@ -25,6 +25,121 @@ import MapKit
 
 class ViewController: UIViewController {
   
-  @IBOutlet var mapView : MKMapView!
+    @IBOutlet var mapView : MKMapView!
+    
+    private var treasures: [Treasure] = []
+    private var foundLocations: [GeoLocation] = []
+    private var polyline: MKPolyline!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.treasures = [
+            HistoryTreasure(what: "Google's first office", year: 1999, latitude: 37.44451, longitude: -122.163369),
+            HistoryTreasure(what: "Facebook's first office", year: 2005, latitude: 37.444268, longitude: -122.163271),
+            FactTreasure(what: "Stanford University", fact: "Founded in 1885 by Leland Stanford.", latitude: 37.427474, longitude: -122.169719),
+            FactTreasure(what: "Moscone West", fact: "Host to WWDC since 2003.", latitude: 37.783083, longitude: -122.404025),
+            FactTreasure(what: "Computer History Museum", fact: "Home to a working Babbage Difference Engine.", latitude: 37.414371, longitude: -122.076817),
+            HQTreasure(company: "Apple", latitude: 37.331741, longitude: -122.030333),
+            HQTreasure(company: "Facebook", latitude: 37.485955, longitude: -122.148555),
+            HQTreasure(company: "Google", latitude: 37.422, longitude: -122.084),
+        ]
+        
+        self.mapView.delegate = self
+        self.mapView.addAnnotations(self.treasures)
+        
+        let recToDisplay = self.treasures.reduce(MKMapRectNull) {
+                (mapRect: MKMapRect, treasure: Treasure) -> MKMapRect in
+                    let treasurePointRect = MKMapRect(origin: treasure.location.mapPoint, size: MKMapSize(width: 0, height: 0))
+                return MKMapRectUnion(mapRect, treasurePointRect)
+        }
+        
+        self.mapView.setVisibleMapRect(recToDisplay, edgePadding: UIEdgeInsetsMake(74, 10, 10, 10), animated: false)
+    }
   
+    private func markTreasureAsFound(treasure: Treasure) {
+        // 1
+        if let index = self.foundLocations.indexOf(treasure.location) {
+            // 2
+            let alert = UIAlertController(title: "Oops!", message: "You've already found this treasure (at step\(index + 1))! Try again!",
+                preferredStyle: .Alert)
+                alert.addAction(UIAlertAction(title: "OK",
+                style: .Default,
+                handler: nil))
+            self.presentViewController(alert, animated: true, completion: nil)
+        } else {
+            // 3
+            self.foundLocations.append(treasure.location)
+            // 4
+            if self.polyline != nil {
+                self.mapView.removeOverlay(self.polyline)
+            }
+            // 5
+            var coordinates = self.foundLocations.map { $0.coordinate }
+            self.polyline = MKPolyline(coordinates: &coordinates, count: coordinates.count)
+            self.mapView.addOverlay(self.polyline)
+        }
+    }
+}
+
+extension ViewController: MKMapViewDelegate {
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        // 1
+        if let treasure = annotation as? Treasure {
+            let view: MKPinAnnotationView
+            // 2
+            if let dequeueView = mapView.dequeueReusableAnnotationViewWithIdentifier("pin") as? MKPinAnnotationView {
+                // 3
+                dequeueView.annotation = annotation
+                view = dequeueView
+            } else {
+                // 4
+                view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pin")
+                view.canShowCallout = true
+                view.animatesDrop = false
+                view.calloutOffset = CGPoint(x: -5, y: 5)
+            view.rightCalloutAccessoryView = UIButton(type: UIButtonType.DetailDisclosure) as UIView
+            }
+            // 5
+            view.pinColor = treasure.pinColor()
+            // 6
+            return view
+        }
+        return nil
+    }
+            
+    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        if let treasure = view.annotation as? Treasure {
+            if let alertable = treasure as? Alertable {
+                let alert = alertable.alert()
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+                alert.addAction(UIAlertAction(title: "Find Nearest", style: UIAlertActionStyle.Default) { action in
+                    // 1
+                    var sortedTreasures = self.treasures
+                    sortedTreasures.sortInPlace {
+                        // 2
+                        let distanceA = treasure.location.distanceBetween($0.location)
+                        let distanceB = treasure.location.distanceBetween($1.location)
+                        return distanceA < distanceB
+                    }
+                    // 3
+                    mapView.deselectAnnotation(treasure, animated: true)
+                    mapView.selectAnnotation(sortedTreasures[1], animated: true)
+                })
+                alert.addAction(UIAlertAction(title: "Found", style: UIAlertActionStyle.Default) { action in
+                    self.markTreasureAsFound(treasure)
+                })
+                self.presentViewController(alert, animated: true, completion: nil)
+            }
+        }
+    }
+            
+    func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer {
+        if let polylineOverlay = overlay as? MKPolyline {
+            let renderer = MKPolylineRenderer(polyline: polylineOverlay)
+            renderer.strokeColor = UIColor.blueColor()
+            return renderer
+        }
+        return MKPolylineRenderer()
+    }
 }
