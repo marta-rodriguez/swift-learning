@@ -26,9 +26,14 @@ class MasterViewController: UIViewController {
   
   @IBOutlet var tableView: UITableView!
   @IBOutlet var searchBar: UISearchBar!
+  var searches = OrderedDictionary<String, [Flickr.Photo]>()
   
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
     if segue.identifier == "showDetail" {
+        if let indexPath = self.tableView.indexPathForSelectedRow {
+            let (_, photos) = self.searches[indexPath.row]
+            (segue.destinationViewController as! DetailViewController).photos = photos
+        }
     }
   }
   
@@ -37,7 +42,13 @@ class MasterViewController: UIViewController {
     if let selectedIndexPath = self.tableView.indexPathForSelectedRow {
       self.tableView.deselectRowAtIndexPath(selectedIndexPath, animated: true)
     }
+    self.navigationItem.leftBarButtonItem = self.editButtonItem()
   }
+    
+    override func setEditing(editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        self.tableView.setEditing(editing, animated: animated)
+    }
 }
 
 extension MasterViewController: UITableViewDataSource, UITableViewDelegate {
@@ -47,11 +58,13 @@ extension MasterViewController: UITableViewDataSource, UITableViewDelegate {
   }
   
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return 0
+    return self.searches.count
   }
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) 
+    let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
+    let (term, photos) = self.searches[indexPath.row]
+    cell.textLabel?.text = "\(term) (\(photos.count))"
     return cell
   }
   
@@ -60,6 +73,10 @@ extension MasterViewController: UITableViewDataSource, UITableViewDelegate {
   }
   
   func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+    if editingStyle == .Delete {
+        self.searches.removeAtIndex(indexPath.row)
+        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+    }
   }
   
 }
@@ -67,6 +84,18 @@ extension MasterViewController: UITableViewDataSource, UITableViewDelegate {
 extension MasterViewController: UISearchBarDelegate {
   
   func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+    searchBar.resignFirstResponder()
+    
+    let searchTerm = searchBar.text
+    Flickr.search(searchTerm!) {
+        switch ($0) {
+        case .Error:
+            break
+        case .Results(let results):
+            self.searches.insert(results, forKey: searchTerm!, atIndex: 0)
+            self.tableView.reloadData()
+        }
+    }
   }
   
 }
