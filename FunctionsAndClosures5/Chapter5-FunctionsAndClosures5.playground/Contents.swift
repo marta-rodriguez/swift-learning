@@ -3,8 +3,9 @@
 import UIKit
 
 let animals = ["fish", "cat", "chicken", "dog"]
-let sortedStrings = animals.sort({
-    one, two in
-    one > two
-})
+//let sortedStrings = animals.sort({
+//    one, two in
+//    one > two
+//})
+let sortedStrings = animals.sort(>)
 print(sortedStrings)
